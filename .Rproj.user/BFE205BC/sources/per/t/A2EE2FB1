@@ -1,0 +1,26 @@
+{
+    "id": "A2EE2FB1",
+    "path": "~/CSsingle/R/CSsingle_basis.R",
+    "project_path": "R/CSsingle_basis.R",
+    "type": "r_source",
+    "hash": "4135223621",
+    "contents": "",
+    "dirty": false,
+    "created": 1703044575667.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "16,2",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1703059318,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1703059318799,
+    "read_only": false,
+    "read_only_alternatives": []
+}

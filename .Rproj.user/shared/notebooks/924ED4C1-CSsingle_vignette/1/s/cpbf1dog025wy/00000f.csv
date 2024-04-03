@@ -1,0 +1,7 @@
+"0","Est.prop = Est.prop.CSsingle"
+"0","Celltype = rep(colnames(Est.prop), each=nrow(Est.prop))"
+"0","Celltype = gsub(""_"", "" "", Celltype)"
+"0","Celltype = factor(Celltype, levels = c( ""Squamous"", ""Mosaic"", ""Gastric columnar"", ""Intestinal columnar""))"
+"0","Tissue = as.character(pData(bulk.eset)[,""Tissue""])"
+"2","Error in `[.data.frame`(pData(bulk.eset), , ""Tissue"") : 选择了未定义的列
+"

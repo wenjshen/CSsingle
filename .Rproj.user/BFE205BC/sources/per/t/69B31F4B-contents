@@ -1,0 +1,15 @@
+#' save_exprs_txt: save an expression matrix
+#' @param exprs an expression matrix
+#' @return sampleLabel a character vector of sample names
+#' @import filename a character string giving the name of the file to save
+#' @author Wenjun Shen, \email{wjshen@stu.edu.cn}
+#' @cite
+#' @export
+save_exprs_txt <- function(exprs,sampleLabel,filename,c1="geneSymbol"){
+  rownames(exprs) = toupper(rownames(exprs))
+  exprs = exprs[which(!duplicated(toupper(rownames(exprs)))),]
+  ct = as.character(sampleLabel)
+  ct = t(as.matrix(c(c1,ct)))
+  write.table(ct, file=filename, append=F, row.names=F, col.names=F, quote=F, sep="\t")
+  write.table(exprs, file=filename, append = T, row.names=T, col.names=F, quote=F, sep="\t")
+}

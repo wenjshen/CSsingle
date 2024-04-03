@@ -1,0 +1,26 @@
+{
+    "id": "405351A5",
+    "path": "~/CSsingle/R/build_sigMat.R",
+    "project_path": "R/build_sigMat.R",
+    "type": "r_source",
+    "hash": "3137515271",
+    "contents": "",
+    "dirty": false,
+    "created": 1703060884548.0,
+    "source_on_save": false,
+    "relative_order": 19,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "12,42",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1703065043,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1703065043074,
+    "read_only": false,
+    "read_only_alternatives": []
+}
