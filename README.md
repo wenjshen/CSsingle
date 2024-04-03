@@ -25,4 +25,4 @@ library(CSsingle)
 
 ## Help
 
-Vignette: [HTML Vignette](https://github.com/wenjshen/CSsingle/tree/master/vignettes/CSsingle_vignette.html)
+Vignette: [HTML Vignette](http://htmlpreview.github.io/?https://github.com/wenjshen/CSsingle/blob/master/vignettes/CSsingle_vignette.html)
