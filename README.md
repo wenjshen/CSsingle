@@ -23,6 +23,6 @@ if (!"CSsingle" %in% rownames(installed.packages())) {
 library(CSsingle)
 ```
 
-## Help
+## Tutorial
 
 Vignette: [HTML Vignette](http://htmlpreview.github.io/?https://github.com/wenjshen/CSsingle/master/vignettes/CSsingle_vignette.html)
