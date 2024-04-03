@@ -1,0 +1,3 @@
+"0","prepData = preprocessData(bulk.eset, sc.eset, cellType)"
+"0","bulk.eset = prepData$bulk.eset"
+"0","sc.eset = prepData$sc.eset"

@@ -1,0 +1,6 @@
+"0","# The scRNA-seq dataset was replicated three times as the function `Seurat::FindAllMarkers` requires at least three cells in each group"
+"0","sc.eset2 = sc.eset"
+"0","sc.eset2@meta.data[[sampleID]] = factor(paste0(sc.eset@meta.data[[sampleID]]),""_2"")"
+"2","Error in `[[<-.data.frame`(`*tmp*`, sampleID, value = integer(0)) : 
+  替换数据里有0行，但数据有2339
+"

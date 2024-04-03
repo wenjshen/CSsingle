@@ -1,0 +1,26 @@
+{
+    "id": "8AF9565B",
+    "path": "W:/work/scRNAseq_deconv/paper/SCDC/SCDC-master/SCDC-master/SCDC-master/R/Deconvolution.R",
+    "project_path": null,
+    "type": "r_source",
+    "hash": "3224758313",
+    "contents": "",
+    "dirty": false,
+    "created": 1703041831677.0,
+    "source_on_save": false,
+    "relative_order": 9,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "12,102",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1657939182,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1657939182,
+    "read_only": false,
+    "read_only_alternatives": []
+}

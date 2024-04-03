@@ -1,0 +1,3 @@
+"0","# bulk data of 233 epithelium samples derived from NE, NGC and BE"
+"0","data(""Barrett_bulk_eset"")"
+"0","bulk.eset <- bulk.eset2"

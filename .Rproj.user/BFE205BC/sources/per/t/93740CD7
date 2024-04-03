@@ -1,0 +1,26 @@
+{
+    "id": "93740CD7",
+    "path": "W:/work/scRNAseq_deconv/paper/MuSiC/MuSiC-master/R/analysis.R",
+    "project_path": null,
+    "type": "r_source",
+    "hash": "3231903470",
+    "contents": "",
+    "dirty": false,
+    "created": 1703040888114.0,
+    "source_on_save": false,
+    "relative_order": 8,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "17,54",
+        "scrollLine": "5"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1549480350,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1549480350,
+    "read_only": false,
+    "read_only_alternatives": []
+}

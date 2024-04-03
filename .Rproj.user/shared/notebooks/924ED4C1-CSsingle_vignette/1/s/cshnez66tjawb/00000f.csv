@@ -1,0 +1,7 @@
+"0","idx = data@meta.data$cellType %in% c( ""Mosaic"", ""Gastric columnar"", ""Intestinal columnar"")"
+"0","data.sub = data[, idx]"
+"0","markers = c(""PGC"",""MUC5AC"",""TFF1"", ""OLFM4"",""GPA33"", ""APOA4"")"
+"0","data.sub$cellType = factor(data.sub$cellType, levels=c(""Mosaic"", ""Gastric columnar"", ""Intestinal columnar""))"
+"0","vplot = VlnPlot(data.sub, markers, group.by = ""cellType"", cols = c(""purple"", ""orange"", ""darkblue""), ncol = 3) & theme(axis.title.x = element_blank(), axis.text.x = element_blank())"
+"0","vplot = ggarrange(vplot, common.legend=TRUE)"
+"0","print(vplot)"

@@ -1,0 +1,6 @@
+"0","# Sample 1 was excluded from subsequent analysis due to technical bias"
+"0","sc.eset <- sc.eset[, -1]"
+"0","cellSize <- cal_cellSize(sc.eset, cellType)"
+"0","# remove ERCC spikes-ins"
+"0","is.spikes <- grepl(""^ERCC-"", rownames(sc.eset))"
+"0","sc.eset = sc.eset[!is.spikes, ]"
