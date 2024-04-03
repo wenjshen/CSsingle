@@ -1,3 +1,0 @@
-"0",""
-"0","tsne.plot = ggarrange(tsne.plot1, tsne.plot2, tsne.plot3, tsne.plot4, ncol = 2, nrow =2)"
-"0","print(tsne.plot)"

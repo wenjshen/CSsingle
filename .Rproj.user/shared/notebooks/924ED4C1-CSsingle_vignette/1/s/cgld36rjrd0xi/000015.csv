@@ -1,1 +1,0 @@
-"0","tsne.plot4=DimPlot(object = data, reduction = 'tsne', label=F, cols=c(""orange"", ""darkblue"", ""purple"", ""darkgreen""), group.by = ""cellType"",raster=FALSE) + labs(title=""Cell type"") + theme(legend.title = element_text(size = 9), legend.text = element_text (size=8)) "

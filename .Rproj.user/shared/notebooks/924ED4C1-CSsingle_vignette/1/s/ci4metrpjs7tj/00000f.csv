@@ -1,3 +1,0 @@
-"0","is.spikes <- grepl(""^ERCC-"", rownames(bulk.eset))"
-"0","bulk.eset = bulk.eset[!is.spikes, ]"
-"0","prop.real = prop.cell/100"

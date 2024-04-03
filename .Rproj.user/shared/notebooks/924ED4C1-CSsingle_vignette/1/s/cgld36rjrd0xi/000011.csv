@@ -1,2 +1,0 @@
-"0","tsne.plot2=DimPlot(object = data, reduction = 'tsne', label=F, group.by = ""tissue"",raster=FALSE) + labs(title=""Tissue"") +"
-"0","  theme(legend.title = element_text(size = 9), legend.text = element_text (size=8)) "

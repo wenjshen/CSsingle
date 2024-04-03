@@ -1,6 +1,0 @@
-"0","cellType = ""cellType"""
-"0","cellSize <- cal_cellSize(sc.eset, cellType)"
-"0",""
-"0","# remove ERCC spikes-ins"
-"0","is.spikes <- grepl(""^ERCC-"", rownames(sc.eset))"
-"0","sc.eset = sc.eset[!is.spikes, ]"

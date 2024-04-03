@@ -1,6 +1,0 @@
-"0","# Build a signature matrix by selecting the top N markers for each cell type"
-"0","res2 <- build_sigMat(diffexpMat, ctDEGs, num.top = 100, sort.by = ""p.value"", rm.dupli = TRUE)"
-"0","markers <- res2$markers"
-"0","sigMat <-  res2$sigMat"
-"0","# Estimation of cell type proportions"
-"0","Est.prop.CSsingle <- CSsingle(sigMat, exprs(bulk.eset), markers, cellSize = cellSize, dampened = TRUE)"

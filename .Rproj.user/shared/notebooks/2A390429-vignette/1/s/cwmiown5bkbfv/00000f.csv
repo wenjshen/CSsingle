@@ -1,5 +1,0 @@
-"0","# load
-library(MuSiC)
-"
-"2","Error in library(MuSiC) : 不存在叫‘MuSiC’这个名字的程辑包
-"
