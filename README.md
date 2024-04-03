@@ -9,7 +9,7 @@ CSsingle is a computational method designed for the accurate decomposition of bu
 ## Installation
 
 ```r
-#in R
+# in R
 # install devtools if necessary
 if (!"devtools" %in% rownames(installed.packages())) {
   install.packages('devtools')
@@ -25,4 +25,4 @@ library(CSsingle)
 
 ## Help
 
-Vignette: [HTML Vignette](https://github.com/wenjshen/CSsingle/CSsingle_vignette.html)
+Vignette: [HTML Vignette](https://github.com/wenjshen/CSsingle/tree/master/vignettes/CSsingle_vignette.html)
