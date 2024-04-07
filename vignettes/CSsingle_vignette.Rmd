@@ -43,6 +43,7 @@ if (!"CSsingle" %in% rownames(installed.packages())) {
 # load required packages
 library(CSsingle)
 library(Seurat)
+library(Biobase)
 library(nnls)
 library(ggplot2)
 library(ggpubr)
