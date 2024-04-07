@@ -12,7 +12,7 @@
 
 <meta name="author" content="Wenjun Shen, Cheng Liu, Yunfei Hu, Yuanfang Lei, Hau-San Wong, Si Wu, and Xin Maizie Zhou" />
 
-<meta name="date" content="2024-04-03" />
+<meta name="date" content="2024-04-07" />
 
 <title>Leveraging cross-source heterogeneity to improve the performance of bulk gene expression deconvolution</title>
 
@@ -342,7 +342,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 improve the performance of bulk gene expression deconvolution</h1>
 <h4 class="author">Wenjun Shen, Cheng Liu, Yunfei Hu, Yuanfang Lei,
 Hau-San Wong, Si Wu, and Xin Maizie Zhou</h4>
-<h4 class="date">2024-04-03</h4>
+<h4 class="date">2024-04-07</h4>
 
 
 
@@ -385,9 +385,10 @@ CSsingle decomposition method.</div>
 <span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co"># load required packages</span></span>
 <span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="fu">library</span>(CSsingle)</span>
 <span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="fu">library</span>(nnls)</span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span></code></pre></div>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="fu">library</span>(Biobase)</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="fu">library</span>(nnls)</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span></code></pre></div>
 </div>
 <div id="example-1-cell-type-deconvolution-in-mixtures-of-two-cell-types-of-remarkedly-different-cell-sizes-hek-and-jurkat-cells" class="section level2">
 <h2>Example 1: Cell type deconvolution in mixtures of two cell types of
