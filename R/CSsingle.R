@@ -9,7 +9,7 @@
 #'
 #' @return a numeric matrix of cell type proportions estimated by CSsingle (add up to 1)
 #' @export
-#' @import Seurat
+#' @import Seurat Biobase
 #' @importFrom nnls nnls
 #'
 #' @author Wenjun Shen
