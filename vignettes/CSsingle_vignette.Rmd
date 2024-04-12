@@ -203,7 +203,7 @@ for (i in names(data.list)[-1]){
   data = cbind.data.frame(c(dat[[1]]), c(dat[[2]]))
   colnames(data) = c("Real", "Estimated")
   data$Celltype =  rep(colnames(dat[[1]]), each = nrow(dat[[1]]))
-  gplots[[i]] <- ggplot(data=data, aes(x=Real,y=Estimated, label=cellType), common.legend = T)+
+  gplots[[i]] <- ggplot(data=data, aes(x=Real,y=Estimated, label=cellType))+
     geom_abline(intercept=0, slope=1, linetype="dashed")+labs(title = i, x="", y="")+
     geom_point(aes(color=Celltype,shape=Celltype), size=3)+
     scale_color_manual(values=c('#4a6fe3','#8e063b'))+
@@ -211,7 +211,7 @@ for (i in names(data.list)[-1]){
     theme(legend.position="none")+
     stat_cor(method="pearson")
 }
-gscat.arrange = ggarrange(plotlist = gplots, ncol = 2, nrow = 2, labels = "")
+gscat.arrange = ggarrange(plotlist = gplots, ncol = 2, nrow = 2, labels = "",common.legend = T)
 gscat.arrange = annotate_figure(gscat.arrange, 
                                 bottom = text_grob("Actual cellular fraction", color = "black", size = 15),
                                 left = text_grob("Estimated cellular fraction", color = "black", rot = 90, size = 15))
@@ -355,7 +355,7 @@ gbplot = ggbarplot(data, fill="Celltype",x = "Celltype", y = "prop", add = "mean
     axis.line.x = element_line(color="black"),
     axis.line.y = element_line(color="black"),
     panel.grid.major = element_blank()) +
-  labs(title= "CSsingle",x="", y = "") +
+  labs(title= "CSsingle",x="Cell type", y = "Mean estimated proportion") +
   theme(legend.position="top", legend.title = element_text(size = 10), legend.text = element_text(size=10))
 print(gbplot)
 ```
@@ -370,7 +370,7 @@ gbxplot = ggplot(dat, aes(x=Tissue, y=est.prop, fill=Tissue)) +
   geom_boxplot() +
   stat_compare_means(comparisons = my_comparisons,label =  "p.format", method = "wilcox.test", method.args = list(alternative = "less")) +
   geom_jitter(aes(fill=Tissue),width =0.2,shape = 21,size=2) +
-  labs(x="", y="", title = "CSsingle") + theme_classic() + 
+  labs(x="Tissue", y="Estimated proportion of mosaic cell population", title = "CSsingle") + theme_classic() + 
   scale_fill_brewer() + theme(legend.position="top", legend.title = element_text(size = 10), legend.text = element_text(size=10))
 print(gbxplot)
 ```
