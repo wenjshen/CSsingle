@@ -49,7 +49,7 @@ library(ggplot2)
 library(ggpubr)
 ```
 
-## Example 1: Cell type deconvolution in mixtures of two cell types of remarkedly different cell sizes: HEK and Jurkat cells
+## Example 1: Cell type deconvolution in mixtures of two cell types of markedly different cell sizes: HEK and Jurkat cells
 
 We reproduce here the analysis detailed in CSsingle manuscript:
 
@@ -112,7 +112,7 @@ prop.real = prop.cell/100
 
 ### Data preprocessing
 
-This step is to exclude cell types that are not interested from scRNA-seq data, remove sparse features and cells and trim bulk and scRNA-seq data to have the same features.
+This step involves excluding cell types that are not of interest from the scRNA-seq data, removing sparse features and cells, and trimming both bulk and scRNA-seq data to ensure they share the same features.
 
 ```{r}
 prepData = preprocessData(bulk.eset, sc.eset, cellType)
@@ -218,7 +218,7 @@ gscat.arrange = annotate_figure(gscat.arrange,
 print(gscat.arrange)
 ```
 
-## Example 2: Cell type deconvolution in in human Barrett’s esophagus tissue
+## Example 2: Cell type deconvolution in human Barrett’s esophagus tissue
 
 We reproduce here the analysis detailed in CSsingle manuscript:
 
@@ -309,7 +309,7 @@ bulk.eset <- bulk.eset2
 
 ### Data preprocessing
 
-This step is to exclude cell types that are not interested from scRNA-seq data, remove sparse features and cells and trim bulk and scRNA-seq data to have the same features.
+This step involves excluding cell types that are not of interest from the scRNA-seq data, removing sparse features and cells, and trimming both bulk and scRNA-seq data to ensure they share the same features.
 
 ```{r}
 prepData = preprocessData(bulk.eset, sc.eset, cellType)
