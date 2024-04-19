@@ -15,7 +15,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 7, fig.heigh
 
 ## Introduction
 
-`CSsingle` (Cross-Source SINGLE cell deconvolution) is an R package for the accurate decomposition of bulk gene expression data into a set of pre-defined cell types using the scRNA-seq or flow-sorting reference. The key strengths of `CSsingle` include (i) it introduces cell size coefficients in deconvolution, which properly correcting for bias arising from both “technical” library size and “biological” cell size, and (ii) it effectively handles technical and biological variations between individual bulk mixtures and the signature matrix. 
+`CSsingle` (Cross-Source SINGLE cell deconvolution) is an R package for the accurate decomposition of bulk gene expression data into a set of pre-defined cell types using the scRNA-seq or flow-sorting reference. The key strengths of `CSsingle` include (i) it introduces cell size coefficients in deconvolution, which properly correcting for bias arising from both “technical” library size and “biological” cell size, and (ii) it effectively handles technical and biological variations between individual bulk mixtures and the signature matrix.
 
 <style>
 figure{
@@ -24,7 +24,7 @@ figure{
 </style>
 
 <figure>
-<p align="center"> 
+<p align="center">
 ![Figure 1: Schematic representation of the CSsingle decomposition method.](../CSsingle_framework.jpg){width="90%"}
 
 ## Installation
@@ -66,7 +66,7 @@ sampleID = "sample"
 ### Estimate absolute RNA content by using ERCC spike-in controls
 
 ```{r}
-counts <- as.matrix(sc.eset[["RNA"]]$counts)
+counts <- as.matrix(sc.eset@assays$RNA@counts)
 is.spikes <- grepl("^ERCC-", rownames(sc.eset))
 spike.counts = counts[is.spikes, ]
 gene.counts = counts[!is.spikes, ]
@@ -175,15 +175,15 @@ print(gplot)
 ```{r}
 library(MuSiC)
 library(SingleCellExperiment)
-sce <- SingleCellExperiment(assays = list(counts = as.matrix(sc.eset[["RNA"]]$counts)), colData = DataFrame(sc.eset@meta.data))
+sce <- SingleCellExperiment(assays = list(counts = as.matrix(sc.eset@assays$RNA@counts)), colData = DataFrame(sc.eset@meta.data))
 # cell_size = NULL
-Est.prop.bulk <- music_prop(exprs(bulk.eset), sce, 
+Est.prop.bulk <- music_prop(exprs(bulk.eset), sce,
                            clusters = cellType, samples = sampleID, cell_size = NULL, verbose = F)
 Est.prop.MuSiC <- Est.prop.bulk$Est.prop.weighted
 Est.prop.NNLS = Est.prop.bulk$Est.prop.allgene
 # cell size estimated by using ERCC spike-ins
 cell_size = cbind.data.frame(names(cellSize),cellSize)
-Est.prop.bulk_cz <- music_prop(exprs(bulk.eset), sce, 
+Est.prop.bulk_cz <- music_prop(exprs(bulk.eset), sce,
                            clusters = cellType, samples = sampleID, cell_size = cell_size, verbose = F)
 Est.prop.MuSiC_cz <- Est.prop.bulk_cz$Est.prop.weighted
 Est.prop.NNLS_cz = Est.prop.bulk_cz$Est.prop.allgene
@@ -212,7 +212,7 @@ for (i in names(data.list)[-1]){
     stat_cor(method="pearson")
 }
 gscat.arrange = ggarrange(plotlist = gplots, ncol = 2, nrow = 2, labels = "",common.legend = T)
-gscat.arrange = annotate_figure(gscat.arrange, 
+gscat.arrange = annotate_figure(gscat.arrange,
                                 bottom = text_grob("Actual cellular fraction", color = "black", size = 15),
                                 left = text_grob("Estimated cellular fraction", color = "black", rot = 90, size = 15))
 print(gscat.arrange)
@@ -242,9 +242,9 @@ data <- RunTSNE(object = data, dims = 1:opt_dim)
 tsne.plot1=DimPlot(object = data, reduction = 'tsne', label=F, group.by = "patient",raster=FALSE) + labs(title="Patient ID") +
   theme(legend.title = element_text(size = 9), legend.text = element_text (size=8))
 tsne.plot2=DimPlot(object = data, reduction = 'tsne', label=F, group.by = "tissue",raster=FALSE) + labs(title="Tissue") +
-  theme(legend.title = element_text(size = 9), legend.text = element_text (size=8)) 
-tsne.plot3=DimPlot(object = data, reduction = 'tsne', label=F, cols=c("orange", "darkblue", "purple", "darkgreen"), group.by = "global_cellType",raster=FALSE) + labs(title="Global cell type") + theme(legend.title = element_text(size = 9), legend.text = element_text (size=8)) 
-tsne.plot4=DimPlot(object = data, reduction = 'tsne', label=F, cols=c("orange", "darkblue", "purple", "darkgreen"), group.by = "cellType",raster=FALSE) + labs(title="Cell type") + theme(legend.title = element_text(size = 9), legend.text = element_text (size=8)) 
+  theme(legend.title = element_text(size = 9), legend.text = element_text (size=8))
+tsne.plot3=DimPlot(object = data, reduction = 'tsne', label=F, cols=c("orange", "darkblue", "purple", "darkgreen"), group.by = "global_cellType",raster=FALSE) + labs(title="Global cell type") + theme(legend.title = element_text(size = 9), legend.text = element_text (size=8))
+tsne.plot4=DimPlot(object = data, reduction = 'tsne', label=F, cols=c("orange", "darkblue", "purple", "darkgreen"), group.by = "cellType",raster=FALSE) + labs(title="Cell type") + theme(legend.title = element_text(size = 9), legend.text = element_text (size=8))
 
 tsne.plot = ggarrange(tsne.plot1, tsne.plot2, tsne.plot3, tsne.plot4, ncol = 2, nrow =2)
 print(tsne.plot)
@@ -264,7 +264,7 @@ print(vplot)
 ### Estimate absolute RNA content by using ERCC spike-in controls
 
 ```{r}
-counts = as.matrix(sc.eset[["RNA"]]$counts)
+counts = as.matrix(sc.eset@assays$RNA@counts)
 spike.counts = counts[is.spikes, ]
 gene.counts = counts[!is.spikes, ]
 normFactor = apply(spike.counts,MARGIN=2,
@@ -370,7 +370,7 @@ gbxplot = ggplot(dat, aes(x=Tissue, y=est.prop, fill=Tissue)) +
   geom_boxplot() +
   stat_compare_means(comparisons = my_comparisons,label =  "p.format", method = "wilcox.test", method.args = list(alternative = "less")) +
   geom_jitter(aes(fill=Tissue),width =0.2,shape = 21,size=2) +
-  labs(x="Tissue", y="Estimated proportion of mosaic cell population", title = "CSsingle") + theme_classic() + 
+  labs(x="Tissue", y="Estimated proportion of mosaic cell population", title = "CSsingle") + theme_classic() +
   scale_fill_brewer() + theme(legend.position="none", legend.title = element_text(size = 10), legend.text = element_text(size=10))
 print(gbxplot)
 ```
