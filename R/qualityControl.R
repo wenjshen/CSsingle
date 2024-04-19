@@ -11,7 +11,7 @@
 #'
 qualityControl <- function(sc.eset, cell.thres=20, feature.thres=0){
   sc.eset <- sc.eset[which(!duplicated(toupper(rownames(sc.eset)))),]
-  exprs <- as.matrix(sc.eset[["RNA"]]$counts)
+  exprs <- as.matrix(sc.eset@assays$RNA@counts)
   cell_sparsity <- apply(exprs != 0, MARGIN = 2, sum)
   keep_cells <- cell_sparsity > cell.thres
   feature_sparsity <- apply(exprs != 0, MARGIN = 1, sum)
