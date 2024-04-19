@@ -12,7 +12,7 @@
 #'
 cal_cellSize <- function(sc.eset, cellType, probs=0.75){
   is.spikes <- grepl("^ERCC-", toupper(rownames(sc.eset)))
-  counts <- as.matrix(sc.eset[["RNA"]]$counts)
+  counts <- as.matrix(sc.eset@assays$RNA@counts)
   spike.counts <- counts[is.spikes, ]
   normFactor <- apply(spike.counts,MARGIN=2,
                      FUN=quantile, probs=probs, na.rm=TRUE)
