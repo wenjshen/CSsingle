@@ -371,6 +371,6 @@ gbxplot = ggplot(dat, aes(x=Tissue, y=est.prop, fill=Tissue)) +
   stat_compare_means(comparisons = my_comparisons,label =  "p.format", method = "wilcox.test", method.args = list(alternative = "less")) +
   geom_jitter(aes(fill=Tissue),width =0.2,shape = 21,size=2) +
   labs(x="Tissue", y="Estimated proportion of mosaic cell population", title = "CSsingle") + theme_classic() + 
-  scale_fill_brewer() + theme(legend.position="top", legend.title = element_text(size = 10), legend.text = element_text(size=10))
+  scale_fill_brewer() + theme(legend.position="none", legend.title = element_text(size = 10), legend.text = element_text(size=10))
 print(gbxplot)
 ```
