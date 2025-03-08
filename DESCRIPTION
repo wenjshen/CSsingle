@@ -1,8 +1,8 @@
 Package: CSsingle
 Type: Package
-Title: What the Package Does (Title Case)
+Title: CSsingle: A Unified Tool for Robust Decomposition of Bulk and Spatial Transcriptomic Data Across Diverse Single-Cell References
 Version: 0.1.0
-Author: Who wrote it
+Author: Wenjun Shen
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
