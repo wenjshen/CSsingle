@@ -1,0 +1,404 @@
+---
+title: "CSsingle: A Unified Tool for Robust Decomposition of Bulk and Spatial Transcriptomic Data Across Diverse Single-Cell References"
+author: "Wenjun Shen, Cheng Liu, Yunfei Hu, Yuanfang Lei, Hau-San Wong, Si Wu, and Xin Maizie Zhou"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CSsingle: A Unified Tool for Robust Decomposition of Bulk and Spatial Transcriptomic Data Across Diverse Single-Cell References}}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 7, fig.height = 6)
+```
+
+## Introduction
+
+`CSsingle` (Cross-Source SINGLE cell decomposition) is an R package for accurate and robust decomposition of bulk and spatial gene expression data into a set of pre-defined cell types using the scRNA-seq or flow-sorting reference. `CSsingle` addresses key challenges in the study of cellular heterogeneity by (i) providing accurate and robust decomposition of bulk and spatial transcriptomic (ST) data, (ii) applying cell size correction using ERCC spike-in controls to effectively correct for biases due to inherent differences in total RNA content across cell types, (iii) effectively handling technical and biological variations between individual mixtures and the signature matrix, and (iv) enhancing fine-scale analysis for spatial transcriptomic data. 
+
+<style>
+figure{
+  text-align: center;
+}
+</style>
+
+<figure>
+<p align="center">
+![Figure 1: Schematic representation of the CSsingle decomposition method.](../CSsingle_framework.jpg){width="90%"}
+
+## Installation
+
+```{r, message = FALSE}
+# install devtools if necessary
+if (!"devtools" %in% rownames(installed.packages())) {
+ install.packages('devtools')
+}
+
+# install the CSsingle package
+if (!"CSsingle" %in% rownames(installed.packages())) {
+ devtools::install_github('wenjshen/CSsingle')
+}
+
+# load required packages
+library(CSsingle)
+library(Seurat)
+library(Biobase)
+library(nnls)
+library(ggplot2)
+library(ggpubr)
+```
+We reproduce here the analysis detailed in CSsingle manuscript:
+
+## Example 1: Cell type decomposition in estimating neutrophil-to-lymphocyte ratio (NLR) from whole blood samples
+
+### Load single-cell reference data in the form of a `SeuratObject`
+
+```{r}
+data("GSE107011_sc")
+```
+
+### Calculate cell size by using ERCC spike-in controls
+
+```{r}
+cellType <- "cellType"
+cellSize <- cal_cellSize(blood_ref, cellType)
+# remove ERCC spikes-ins
+is.spikes <- grepl("^ERCC-", rownames(blood_ref))
+blood_ref <- blood_ref[!is.spikes, ]
+```
+
+### Load bulk data in the form of an `ExpressionSet`
+
+```{r}
+data("GSE73072_SI_bulk")
+```
+
+### Data preprocessing
+
+This step involves excluding cell types that are not of interest from the scRNA-seq data, removing sparse features and cells, and trimming both bulk and scRNA-seq data to ensure they share the same features.
+
+```{r}
+select.ct <- c("lymphocyte", "Neutrophils_LD", "myeloid")
+prepData <- preprocessData(blood_bulk, blood_ref, cellType, select.ct)
+bulk.eset <- prepData$bulk.eset
+sc.eset <- prepData$sc.eset
+cellSize <- cellSize[select.ct]
+```
+
+### Build a differentially expressed matrix on the scRNA-seq data
+
+```{r}
+res1 <- build_diffexpMat(sc.eset, cellType, test.use = "bimod")
+ctDEGs <- res1$ctDEGs
+diffexpMat <- res1$diffexpMat
+```
+### Estimation of cell type proportions by `CSsingle`
+
+```{r}
+# Build a signature matrix by selecting the top 100 markers for each cell type
+res2 <- build_sigMat(diffexpMat, ctDEGs, num.top = 100, sort.by = "p.value", rm.dupli = TRUE)
+markers <- res2$markers
+sigMat <-  res2$sigMat
+# Estimation of cell type proportions
+Est.prop.CSsingle <- CSsingle(sigMat, exprs(bulk.eset), markers, cellSize = cellSize, dampened = TRUE)
+```
+
+OR
+
+### Estimation of cell type proportions by `CSsingle_optimize`
+
+We created multiple signature matrices by varying the number of marker genes from 50 to 200 with step 50 for each cell type by default. In the presence of multiple signature matrices, we combined CSsingle with each signature matrix to get estimates of the cell type proportions. The optimal signature matrix $S^*$ is chosen as the candidate matrix whose inferred bulk/ST gene expression data has the maximal Spearman correlation with the real bulk/ST gene expression data.
+
+```{r}
+start_time <- Sys.time()
+Est.prop.CSsingle <- CSsingle_optimize(diffexpMat, exprs(bulk.eset), ctDEGs, cellSize = cellSize, dampened=TRUE)
+end_time <- Sys.time()
+print(end_time-start_time)
+```
+
+### Plot the temporal alterations in the `NLR`, as assessed by `CSsingle`, against those observed in laboratory white blood cell counts
+
+```{r}
+library(ggrepel)
+library(ggpubr)
+library(ggplot2)
+library(gridExtra)
+# We collected the laboratory measurements of neutrophil/lymphocyte counts from Table S6 of a previous published study (PLoS Genet. 2011 Aug;7(8):e1002234.)
+data("wbc_counts")
+
+neut <- wbc_counts[,"Neutrophils"]
+neut <- neut[seq(2,length(neut),2)]
+neut <- c(mean(neut[c(1,2)]),neut[c(-1,-2)])
+lymp <- wbc_counts[,"Lymphocytes"]
+lymp <- lymp[seq(2,length(lymp),2)]
+lymp <- c(mean(lymp[c(1,2)]),lymp[c(-1,-2)])
+nlr <- neut/lymp
+time.slot <- list(c(-Inf,0),c(0,24),c(24,2*24),c(2*24,3*24),c(3*24,4*24),c(4*24,5*24),c(5*24,6*24),c(6*24,7*24))
+label <- c("Baseline","Day1","Day2","Day3","Day4","Day5","Day6","Day7")
+Lymp <- Est.prop.CSsingle[, "lymphocyte"]
+Neut <- Est.prop.CSsingle[, "Neutrophils_LD"]
+NLR <- Neut/Lymp
+meta <- pData(bulk.eset)[names(Neut),]
+
+mean.neut <- mean.lymp <- mean.nlr <- c()
+for (j in 1:length(time.slot)){
+  idx <- as.numeric(meta$time.hours) <= time.slot[[j]][2] & as.numeric(meta$time.hours) > time.slot[[j]][1]
+  mean.neut[j] <- mean(Neut[idx])*100
+  mean.lymp[j] <- mean(Lymp[idx])*100
+  mean.nlr[j] <- mean(NLR[idx])
+}
+dataf <- cbind.data.frame(neut, lymp, nlr, mean.neut, mean.lymp, mean.nlr, label)
+
+gplotn <- ggscatter(dataf,x="neut",y="mean.neut",fill="label",
+                   shape=21,size=3.5,add = "reg.line",add.params = list(fill="darkgrey",color="black"),conf.int=T,ylab="Mean estimated neutrophil proportion (%)",
+                   xlab="% of Neutrophil (laboratory measured)", title = NULL)+
+  stat_cor(method="pearson")+theme(legend.position = "none")+
+  geom_text_repel(aes(y=mean.neut, x=neut, label = label))
+
+gplotl <- ggscatter(dataf,x="lymp",y="mean.lymp",fill="label",
+                   shape=21,size=3.5,add = "reg.line",add.params = list(fill="darkgrey",color="black"),conf.int=T,ylab="Mean estimated lymphocyte proportion (%)",
+                   xlab="% of Lymphocyte (laboratory measured)", title = NULL)+
+  stat_cor(method="pearson")+theme(legend.position = "none")+
+  geom_text_repel(aes(y=mean.lymp, x=lymp, label = label))
+
+gplotr <- ggscatter(dataf,x="nlr",y="mean.nlr",fill="label",
+                   shape=21,size=3.5,add = "reg.line",add.params = list(fill="darkgrey",color="black"),conf.int=T,ylab="Mean estimated NLR",
+                   xlab="NLR (laboratory measured)", title = NULL)+ ylim(c(0,4))+ geom_hline(yintercept=1,lty=2, lwd=1)+
+  stat_cor(method="pearson")+theme(legend.position = "none")+
+  geom_text_repel(aes(y=mean.nlr, x=nlr, label = label))
+
+gplot <- ggarrange(gplotn, gplotl, gplotr, ncol = 2, nrow = 2)
+print(gplot)
+```
+
+## Example 2: Cell type decomposition in human Barrett’s esophagus tissue
+
+We reproduce here the analysis detailed in CSsingle manuscript:
+
+### Load single-cell reference data in the form of a `SeuratObject`
+
+```{r}
+data("EGAS00001003144_sc")
+```
+
+### t-SNE projection of scRNA-seq data from samples of BE (Barrett’s Esophagus), NE (Normal Esophagus), NGC (Normal Gastric Cardia), and ND (Normal Duodenum)
+
+```{r}
+is.spikes <- grepl("^ERCC-", rownames(barrett_ref))
+data <- barrett_ref[!is.spikes, ]
+data <- SCTransform(data, verbose = FALSE)
+data <- RunPCA(object = data)
+opt_dim <- 12
+data <- FindNeighbors(data, dims = 1:opt_dim)
+data <- FindClusters(object = data, resolution = 0.8)
+data <- RunTSNE(object = data, dims = 1:opt_dim)
+tsne.plot1=DimPlot(object = data, reduction = 'tsne', label=F, group.by = "patient",raster=FALSE) + labs(title="Patient ID") +
+  theme(legend.title = element_text(size = 9), legend.text = element_text (size=8))
+tsne.plot2=DimPlot(object = data, reduction = 'tsne', label=F, group.by = "tissue",raster=FALSE) + labs(title="Tissue") +
+  theme(legend.title = element_text(size = 9), legend.text = element_text (size=8))
+tsne.plot3=DimPlot(object = data, reduction = 'tsne', label=F, cols=c("orange", "darkblue", "purple", "darkgreen"), group.by = "global_cellType",raster=FALSE) + labs(title="Global cell type") + theme(legend.title = element_text(size = 9), legend.text = element_text (size=8))
+tsne.plot4=DimPlot(object = data, reduction = 'tsne', label=F, cols=c("orange", "darkblue", "purple", "darkgreen"), group.by = "cellType",raster=FALSE) + labs(title="Cell type") + theme(legend.title = element_text(size = 9), legend.text = element_text (size=8))
+
+tsne.plot <- ggarrange(tsne.plot1, tsne.plot2, tsne.plot3, tsne.plot4, ncol = 2, nrow =2)
+print(tsne.plot)
+```
+
+### Violin plots of marker gene expression in mosaic, gastric, and intestinal columnar cells
+
+```{r}
+idx <- data@meta.data$cellType %in% c( "Mosaic", "Gastric columnar", "Intestinal columnar")
+data.sub <- data[, idx]
+markers <- c("PGC","MUC5AC","TFF1", "OLFM4","GPA33", "APOA4")
+data.sub$cellType <- factor(data.sub$cellType, levels=c("Mosaic", "Gastric columnar", "Intestinal columnar"))
+vplot <- VlnPlot(data.sub, markers, group.by = "cellType", cols = c("purple", "orange", "darkblue"), ncol = 3) & theme(axis.title.x = element_blank(), axis.text.x = element_blank())
+vplot <- ggarrange(vplot, common.legend=TRUE)
+print(vplot)
+```
+
+### Estimate absolute RNA content by using ERCC spike-in controls
+
+```{r}
+counts <- as.matrix(barrett_ref@assays$RNA@counts)
+spike.counts <- counts[is.spikes, ]
+gene.counts <- counts[!is.spikes, ]
+normFactor <- apply(spike.counts,MARGIN=2,
+                   FUN=quantile,probs=0.75,na.rm=TRUE)
+gene.norm.counts <- t(t(gene.counts)/(normFactor+1))
+abs.RNAcontent <- colSums(gene.norm.counts)
+
+Celltype <- barrett_ref@meta.data[["cellType"]]
+Celltype <- gsub("_", " ", Celltype)
+Celltype <- factor(Celltype, levels = c( "Squamous", "Mosaic", "Gastric columnar", "Intestinal columnar"))
+data <- cbind.data.frame(abs.RNAcontent, Celltype)
+pal <- c("darkgreen", "purple", "orange", "darkblue")
+gbplot <- ggbarplot(data, fill="Celltype",x = "Celltype", y = "abs.RNAcontent", add = "mean_se",
+                color = "Celltype", palette = pal,
+                position = position_dodge(0.8))+
+  labs(fill="") +
+  xlab("Cell type") + ylab("Total RNA content \n with spike-in normalization")+
+  theme(legend.position="none") +
+  theme(axis.title.x=element_blank(), axis.text.x=element_text(size=12, angle=45,vjust=0.6)) +
+  stat_compare_means(method =  "kruskal.test", label.y = 1e5, size = 4) +
+  scale_y_continuous(labels=scales::scientific)
+print(gbplot)
+```
+
+### Calulate cell size by using ERCC spike-in controls
+
+```{r}
+cellType <- "cellType"
+cellSize <- cal_cellSize(barrett_ref, cellType)
+
+# remove ERCC spikes-ins
+is.spikes <- grepl("^ERCC-", rownames(barrett_ref))
+barrett_ref <- barrett_ref[!is.spikes, ]
+```
+
+### Load bulk data in the form of an `ExpressionSet`
+
+```{r}
+# bulk data of 233 epithelium samples derived from NE, NGC and BE
+data("Barrett_bulk")
+```
+
+### Data preprocessing
+
+This step involves excluding cell types that are not of interest from the scRNA-seq data, removing sparse features and cells, and trimming both bulk and scRNA-seq data to ensure they share the same features.
+
+```{r}
+prepData <- preprocessData(barrett_bulk, barrett_ref, cellType)
+bulk.eset <- prepData$bulk.eset
+sc.eset <- prepData$sc.eset
+```
+
+### Build a differentially expressed matrix
+
+```{r}
+# Build a differentially expressed matrix by performing differential expression analysis on the scRNA-seq data
+res1 <- build_diffexpMat(sc.eset, cellType, test.use = "bimod")
+ctDEGs <- res1$ctDEGs
+diffexpMat <- res1$diffexpMat
+```
+
+### Estimation of cell type proportions by `CSsingle`
+
+```{r}
+# Build a signature matrix by selecting the top 50 markers for each cell type
+res2 <- build_sigMat(diffexpMat, ctDEGs, num.top = 50)
+markers <- res2$markers
+sigMat <-  res2$sigMat
+# Estimation of cell type proportions
+Est.prop.CSsingle <- CSsingle(sigMat, exprs(bulk.eset), markers, cellSize = cellSize, dampened = TRUE)
+```
+
+### Plots of decomposition estimates for 233 epithelium samples derived from NE, NGC and BE.
+
+```{r}
+Est.prop <- Est.prop.CSsingle
+Celltype <- rep(colnames(Est.prop), each=nrow(Est.prop))
+Celltype <- gsub("_", " ", Celltype)
+Celltype <- factor(Celltype, levels = c( "Squamous", "Mosaic", "Gastric columnar", "Intestinal columnar"))
+Tissue <- as.character(pData(bulk.eset)[,"Tissue"])
+tissue <- rep(Tissue, ncol(Est.prop))
+data <- data.frame(prop = c(Est.prop), Celltype = Celltype, tissue = factor(tissue, levels = c("Squamous esophagus", "Gastric cardia", "Barrett esophagus")))
+gbplot <- ggbarplot(data, fill="Celltype",x = "Celltype", y = "prop", add = "mean_se",
+                   color = "Celltype", palette = c("darkgreen", "purple", "orange", "darkblue"), facet.by = "tissue",
+                   position = position_dodge(0.8))+ ylim(0, 1) +
+  theme(axis.text.x=element_blank()) +
+  theme(
+    panel.background = element_blank(),
+    axis.line.x = element_line(color="black"),
+    axis.line.y = element_line(color="black"),
+    panel.grid.major = element_blank()) +
+  labs(title = "CSsingle",x="Cell type", y = "Mean estimated proportion") +
+  theme(legend.position="top", legend.title = element_text(size = 10), legend.text = element_text(size=10))
+print(gbplot)
+```
+
+### Comparison of the estimated proportions of mosaic columnar cell (MCC) in NE, NGC, and BE.
+
+```{r}
+Est.prop <- Est.prop.CSsingle[, "Mosaic"]
+dat <- data.frame(est.prop = c(Est.prop), Tissue = factor(Tissue, levels=c("Squamous esophagus", "Gastric cardia", "Barrett esophagus")))
+my_comparisons <- list(c("Squamous esophagus","Barrett esophagus"),c("Gastric cardia","Barrett esophagus"))
+gbxplot <- ggplot(dat, aes(x = Tissue, y = est.prop, fill = Tissue)) +
+  geom_boxplot() +
+  stat_compare_means(comparisons = my_comparisons,label =  "p.format", method = "wilcox.test", method.args = list(alternative = "less")) +
+  geom_jitter(aes(fill=Tissue),width =0.2,shape = 21,size=2) +
+  labs(x="Tissue", y="Estimated proportion of mosaic cell population", title = "CSsingle") + theme_classic() +
+  scale_fill_brewer() + theme(legend.position="none", legend.title = element_text(size = 10), legend.text = element_text(size=10))
+print(gbxplot)
+```
+
+## Example 3: Cell type decomposition in human fetal pancreas (real spatial transcriptomic data)
+
+### Load single-cell reference data in the form of a `SeuratObject`
+
+```{r}
+data("GSE85241_sc")
+```
+
+### Load spatial transcriptomic data in the form of a `SeuratObject`
+
+```{r}
+data("GSM5914540_st")
+```
+
+### Build a differentially expressed matrix on the scRNA-seq data
+
+```{r}
+com.genes <- intersect(toupper(rownames(pancreas_ref)), rownames(pancreas_st))
+cellType <- "cellType"
+res1 <- build_diffexpMat(pancreas_ref[com.genes, ], cellType, test.use = "wilcox")
+ctDEGs <- res1$ctDEGs
+diffexpMat <- res1$diffexpMat
+```
+
+### Estimation of cell type proportions by `CSsingle`
+
+```{r}
+## Estimation of cell type proportions by `CSsingle`
+# Build a signature matrix by selecting the top 200 markers for each cell type
+res2 <- build_sigMat(diffexpMat, ctDEGs, num.top = 200, sort.by = "p.value", rm.dupli = TRUE)
+markers <- res2$markers
+sigMat <-  res2$sigMat
+# Estimation of cell type proportions
+Est.prop.CSsingle <- CSsingle(sigMat, as.matrix(pancreas_st[["Spatial"]]$counts), markers, enrichment = TRUE, enrich.thres = 0, dampened = TRUE)
+
+## or by `CSsingle_optimize`
+start_time <- Sys.time()
+Est.prop.CSsingle <- CSsingle_optimize(diffexpMat, as.matrix(pancreas_st[["Spatial"]]$counts), ctDEGs, cellSize = NULL, enrichment = TRUE, enrich.thres = 0, dampened = TRUE)
+end_time <- Sys.time()
+print(end_time-start_time)
+```
+
+### Visulization of cell-type spatial distribution
+
+```{r}
+library(scatterpie)
+mycol <- c("deepskyblue", "goldenrod2", "purple",
+           "green2", "royalblue", "pink",
+           "red2", "yellow", "orange")
+
+plot_data <- as.data.frame(Est.prop.CSsingle)
+plot_col <- sort(colnames(plot_data))
+# scatterpie
+spatial_loc <- data.frame(pancreas_st@images[["X12PCW_S2"]]@boundaries$centroids@coords)
+spatial_loc <- data.frame(x=spatial_loc$x,
+                          y=spatial_loc$y,
+                          row.names = colnames(pancreas_st))
+spot_coords <- spatial_loc[rownames(Est.prop.CSsingle), ]
+plot_data$x <- as.numeric(as.character(spot_coords$x))
+plot_data$y <- as.numeric(as.character(spot_coords$y))
+min_x <- min(plot_data$x)
+rad = 55
+plot_data$radius <- rad
+df <- data.frame()
+p <- ggplot(df) + geom_point() + xlim(min(plot_data$x)-rad, max(plot_data$x)+rad) + ylim(min(plot_data$y)-rad, max(plot_data$y)+rad) + labs(title = "12PCW_S2") + xlab("x coordinates") + ylab("y coordinates")
+pieplot <- p + geom_scatterpie(aes(x=x, y=y, r=radius), data=plot_data, cols=plot_col, color=NA, alpha=.8) +
+  geom_scatterpie_legend(plot_data$radius, x=1, y=1) +
+  theme_classic() +
+  scale_fill_manual(name = "Cell type", values = mycol)
+print(pieplot)
+```
