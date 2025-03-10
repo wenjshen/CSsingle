@@ -111,10 +111,7 @@ OR
 We created multiple signature matrices by varying the number of marker genes from 50 to 200 with step 50 for each cell type by default. In the presence of multiple signature matrices, we combined CSsingle with each signature matrix to get estimates of the cell type proportions. The optimal signature matrix $S^*$ is chosen as the candidate matrix whose inferred bulk/ST gene expression data has the maximal Spearman correlation with the real bulk/ST gene expression data.
 
 ```{r}
-start_time <- Sys.time()
 Est.prop.CSsingle <- CSsingle_optimize(diffexpMat, exprs(bulk.eset), ctDEGs, cellSize = cellSize, dampened=TRUE)
-end_time <- Sys.time()
-print(end_time-start_time)
 ```
 
 ### Plot the temporal alterations in the `NLR`, as assessed by `CSsingle`, against those observed in laboratory white blood cell counts
@@ -355,18 +352,17 @@ ctDEGs <- res1$ctDEGs
 diffexpMat <- res1$diffexpMat
 ```
 
-### Estimation of cell type proportions by `CSsingle`
+### Estimation of cell type proportions by `CSsingle_optimize`
 
 ```{r}
-## Estimation of cell type proportions by `CSsingle`
 # Build a signature matrix by selecting the top 200 markers for each cell type
-res2 <- build_sigMat(diffexpMat, ctDEGs, num.top = 200, sort.by = "p.value", rm.dupli = TRUE)
-markers <- res2$markers
-sigMat <-  res2$sigMat
-# Estimation of cell type proportions
-Est.prop.CSsingle <- CSsingle(sigMat, as.matrix(pancreas_st[["Spatial"]]$counts), markers, enrichment = TRUE, enrich.thres = 0, dampened = TRUE)
+Est.prop.CSsingle <- CSsingle_optimize(diffexpMat, as.matrix(pancreas_st[["Spatial"]]$counts), ctDEGs, cellSize = NULL, enrichment = TRUE, enrich.thres = 0, dampened = TRUE, increment = 200)
+```
 
-## or by `CSsingle_optimize`
+OR
+
+```{r}
+# Automatically select the optimal signature matrix
 start_time <- Sys.time()
 Est.prop.CSsingle <- CSsingle_optimize(diffexpMat, as.matrix(pancreas_st[["Spatial"]]$counts), ctDEGs, cellSize = NULL, enrichment = TRUE, enrich.thres = 0, dampened = TRUE)
 end_time <- Sys.time()

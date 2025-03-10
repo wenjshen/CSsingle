@@ -9,20 +9,19 @@ CSsingle is a unified tool designed for the accurate and robust decomposition of
 ## Installation
 
 ```r
-#in R
 # install devtools if necessary
 if (!"devtools" %in% rownames(installed.packages())) {
   install.packages('devtools')
 }
 
-# install the CSsingle package
+# install CSsingle package
 if (!"CSsingle" %in% rownames(installed.packages())) {
  devtools::install_github('wenjshen/CSsingle')
 }
-# load
+# load package
 library(CSsingle)
 ```
 
 ## Help
 
-Vignette: [HTML Vignette](https://github.com/wenjshen/CSsingle/vignettes/CSsingle_vignette.html)
+Vignette: [HTML Vignette](https://wenjshen.github.io/CSsingle)

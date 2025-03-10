@@ -20,7 +20,9 @@
 #'
 CSsingle <- function(sigMat, mixture, markers, cellSize = NULL, enrichment = FALSE, enrich.thres = 0, enrich.ct = NULL, dampened = FALSE, beta = c(0, 0.5, 1), filepath = NULL){
   if (enrichment & is.null(enrich.ct)){
-    enrich.ct <- enrichmentMarkers(sigMat, mixture, markers, enrich.thres = enrich.thres)
+    markers_top50 <- lapply(markers, function(x) x[1:min(50, length(x))])
+    sigMat_top50 <- diffexpMat[unique(unlist(markers_top50)), ]
+    enrich.ct <- enrichmentMarkers(sigMat_top50, mixture, markers_top50, enrich.thres = enrich.thres)
   }
   # column normalization
   mixture <- apply(mixture, 2, function(x) 1e4*x/sum(x))
