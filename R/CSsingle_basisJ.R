@@ -28,7 +28,7 @@ CSsingle_basisJ <- function(X, y, X_D, y_D, est.prop, markers, dampened = FALSE,
       gweight[gweight > limit[h]] <- limit[h]
       X.weight <- sweep(X, 1, sqrt(gweight), '*')
       y.weight <- y * sqrt(gweight)
-      w <- nnls(X.weight, y.weight)
+      w <- nnls::nnls(X.weight, y.weight)
       wnorm <- w$x/sum(w$x)
       correlation[h] <- cor(X_D %*% matrix(wnorm), y_D, method="spearman")
     }
@@ -38,7 +38,7 @@ CSsingle_basisJ <- function(X, y, X_D, y_D, est.prop, markers, dampened = FALSE,
   ## weighted NNLS
   X.weight <- sweep(X, 1, sqrt(gene.weight), '*')
   y.weight <- y * sqrt(gene.weight)
-  w <- nnls(X.weight, y.weight)
+  w <- nnls::nnls(X.weight, y.weight)
   wnorm <- w$x/sum(w$x)
   return(wnorm)
 }

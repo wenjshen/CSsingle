@@ -3,7 +3,7 @@
 #' @param diffexpMat numeric matrix, a differentially expressed matrix
 #' @param mixture numeric matrix, bulk or spatial trancriptomic gene expression matrix (raw counts for RNA-seq or ST, RMA normalized intensity values in linear scale for Microarray)
 #' @param ctDEGs data frame, matrix containing a ranked list of differentially expressed genes, and associated statistics
-#' @param cellSize Users can specify a numeric vector of cell sizes, default is NULL, which means that we assume the absolute amount of total mRNA is similar across different cell types in deconvolution
+#' @param cellSize users can specify a numeric vector of cell sizes, default is NULL, which assumes that the absolute amount of total mRNA is similar across different cell types in deconvolution. Set to NULL when ERCC spike-ins are unavailable from scRNA-seq reference or for spatial transcriptomics (ST) analysis.
 #' @param enrichment whether to identify cell types enriched in ST spots, default is FALSE
 #' @param enrich.thres default is 0
 #' @param dampened whether to introduce a upper bound constant that limits the maximum value any weight can take on, default is FALSE
@@ -54,7 +54,7 @@ CSsingle_optimize <- function(diffexpMat, mixture, ctDEGs, cellSize = NULL, enri
 
   correlation <- c()
   for (i in 1 : length(Est.propS)){
-    est.mixture <- sigmat %*% t(Est.propS[[i]])
+    est.mixture <- sigmat[, colnames(Est.propS[[i]])] %*% t(Est.propS[[i]])
     corr <- c()
     for (j in 1 : ncol(mixture.norm)){
       if (any(is.na(est.mixture[, j]))){

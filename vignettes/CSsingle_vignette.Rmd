@@ -95,6 +95,8 @@ diffexpMat <- res1$diffexpMat
 ```
 ### Estimation of cell type proportions by `CSsingle`
 
+Set `cellSize = NULL` when ERCC spike-ins are unavailable from scRNA-seq reference.
+
 ```{r}
 # Build a signature matrix by selecting the top 100 markers for each cell type
 res2 <- build_sigMat(diffexpMat, ctDEGs, num.top = 100, sort.by = "p.value", rm.dupli = TRUE)
@@ -352,7 +354,9 @@ ctDEGs <- res1$ctDEGs
 diffexpMat <- res1$diffexpMat
 ```
 
-### Estimation of cell type proportions by `CSsingle_optimize`
+### Estimation of cell type proportions by `CSsingle`. 
+
+When estimating cell type proportions using `CSsingle`, omit cell size correction (cellSize = NULL) for spot-based ST deconvolution. This is because incomplete cellular capture by 2D slides and stochastic cell overlaps dominate RNA contributions, obscuring biological size differences.
 
 ```{r}
 # Build a signature matrix by selecting the top 200 markers for each cell type

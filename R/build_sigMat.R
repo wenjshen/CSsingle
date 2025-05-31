@@ -11,6 +11,7 @@
 #' \item{topSigMat}{numeric matrix, signature matrix}
 #' \item{topMarkers}{a list of marker genes for each cell type}
 #'
+#' @import Rfast
 #' @author Wenjun Shen
 #' @export
 #'

@@ -30,7 +30,7 @@ build_diffexpMat <- function(sc.eset, cellType, only.pos = TRUE, test.use = "wil
   Idents(object = sc.eset) <- factor(cty)
   # build design matrix
   designMat <- sapply(unique(cty), function(ct) {
-    y = as.matrix(sc.eset[["RNA"]]$counts[, cty %in% ct,
+    y = as.matrix(GetAssayData(sc.eset, assay = "RNA", layer = "counts")[, cty %in% ct,
                                           drop = FALSE])
     1e4 * rowSums(y)/sum(y)
   })

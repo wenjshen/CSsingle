@@ -3,7 +3,7 @@
 #' @param sigMat numeric matrix, signature matrix
 #' @param mixture numeric matrix, bulk or spatial trancriptomic gene expression matrix (raw counts for RNA-seq or ST, RMA normalized intensity values in linear scale for Microarray)
 #' @param markers list of gene markers for each cell type
-#' @param cellSize Users can specify a numeric vector of cell sizes, default is NULL, which means that we assume the absolute amount of total mRNA is similar across different cell types in deconvolution
+#' @param cellSize users can specify a numeric vector of cell sizes, default is NULL, which assumes that the absolute amount of total mRNA is similar across different cell types in deconvolution. Set to NULL when ERCC spike-ins are unavailable from scRNA-seq reference or for spatial transcriptomics (ST) analysis.
 #' @param enrichment whether to identify cell types enriched in ST spots, default is FALSE
 #' @param enrich.thres default is 0
 #' @param enrich.ct a list of cell type enriched in ST spots

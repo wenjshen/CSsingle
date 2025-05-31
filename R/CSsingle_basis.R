@@ -73,7 +73,7 @@ CSsingle_basis <- function(X, y, markers, cellSize = NULL, enrich = NULL, dampen
         gweight[gweight > limit[h]] <- limit[h]
         X.weight <- sweep(X, 1, sqrt(gweight), '*')
         y.weight <- y * sqrt(gweight)
-        w <- nnls(X.weight, y.weight)
+        w <- nnls::nnls(X.weight, y.weight)
         wnorm <- w$x/sum(w$x)
         correlation[h] <- cor(X_D %*% matrix(wnorm), y_D, method = "spearman")
       }
@@ -84,7 +84,7 @@ CSsingle_basis <- function(X, y, markers, cellSize = NULL, enrich = NULL, dampen
     ## weighted NNLS
     X.weight <- sweep(X, 1, sqrt(gene.weight), '*')
     y.weight <- y * sqrt(gene.weight)
-    w <- nnls(X.weight, y.weight)
+    w <- nnls::nnls(X.weight, y.weight)
     wnorm <- w$x/sum(w$x)
     num.iter <- 0
     change <- 1
