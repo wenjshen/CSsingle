@@ -29,5 +29,5 @@ library(CSsingle)
 Vignette: [HTML Vignette](https://wenjshen.github.io/CSsingle)
 
 ## How to cite CSsingle
-Please cite the following publication:
+
 Wenjun Shen, Yunfei Hu, Yuanfang Lei, Hau-San Wong, Cheng Liu, Si Wu, Xin Maizie Zhou, CSsingle: a unified tool for robust decomposition of bulk and spatial transcriptomic data across diverse single-cell references, Nucleic Acids Research, Volume 54, Issue 8, 8 May 2026, gkag410, https://doi.org/10.1093/nar/gkag410
